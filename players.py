@@ -12,6 +12,8 @@ def player_factory(player_name):
         return EstimatorPlayerV2
     elif player_name == "estimator_v3":
         return EstimatorPlayerV3
+    elif player_name == "estimator_v4":
+        return EstimatorPlayerV4
 
 
 class Player(object):
@@ -108,7 +110,7 @@ class EstimatorPlayerV2(EstimatorPlayer):
 empirical_positions = None
 
 
-def generate_empirical_positions(trials=10000):
+def generate_empirical_positions(trials=10000, do_round=True):
     counts = np.zeros(len(game.VALUES), dtype=int)
     sums = np.zeros(len(game.VALUES), dtype=int)
 
@@ -118,16 +120,30 @@ def generate_empirical_positions(trials=10000):
             counts[tile - 1] += 1
             sums[tile - 1] += position
 
-    ans = dict((t + 1, round(pos)) for (t, pos) in enumerate(sums / counts))
+    if do_round:
+        ans = dict((t + 1, round(pos)) for (t, pos) in enumerate(sums / counts))
+    else:
+        ans = dict((t + 1, pos) for (t, pos) in enumerate(sums / counts))
     logging.info("generated closest positions as %s", ans)
     return ans
 
 
 class EstimatorPlayerV3(EstimatorPlayerV2):
-    # use an empirical list of closest_positions
+    # use an empirical list of closest_positions, rounded to ints
     def __init__(self):
         global empirical_positions
         if empirical_positions is None:
-            empirical_positions = generate_empirical_positions()
+            empirical_positions = generate_empirical_positions(do_round=True)
+        self.closest_positions = empirical_positions
+        super().__init__()
+
+
+class EstimatorPlayerV4(EstimatorPlayer):
+    # use an empirical list of closest_positions, not rounded
+    # due to lack of rounding, has to fall back to Estimator V1 decisions
+    def __init__(self):
+        global empirical_positions
+        if empirical_positions is None:
+            empirical_positions = generate_empirical_positions(do_round=False)
         self.closest_positions = empirical_positions
         super().__init__()

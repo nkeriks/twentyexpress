@@ -32,9 +32,10 @@ def main(argv):
             logging.info("play = %s", player.state)
         res[n] = score
 
-    logging.info("Did %s trials with player %s", FLAGS.trials, FLAGS.player)
-    logging.info(
-        "mean, median, min, max = %.2f, %.2f, %s, %s",
+    logging.warning(
+        "Did %s trials with player %s: mean, median, min, max = %.2f, %.2f, %s, %s",
+        FLAGS.trials,
+        FLAGS.player,
         res.mean(),
         np.median(res),
         res.min(),
