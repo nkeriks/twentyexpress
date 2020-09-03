@@ -1,5 +1,6 @@
 import numpy as np
 
+NUM_POSITIONS = 20
 SCORES = {
     1: 0,
     2: 1,
@@ -99,4 +100,4 @@ def score_board(x):
 
 
 def draw():
-    return np.random.choice(TILES, size=20, replace=False)
+    return np.random.choice(TILES, size=NUM_POSITIONS, replace=False)
